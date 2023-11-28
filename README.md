@@ -52,6 +52,7 @@ The following commands will open "public" entry access to the appropriate direct
 > chmod 777 ./storage/framework/cache/data
 > php artisan key:generate
 > php artisan migrate
+> php artisan db:seed
 ```
 
 If the migration command returns a database connection error,
@@ -67,7 +68,11 @@ and repeat the migration command
 
 ```
 > php artisan migrate
+> php artisan db:seed
 ```
+
+database/seeders/UserSeeder.php generates one test user - “admin” for implementing GET requests via api_key authentication.
+
 
 If testing is carried out on another machine on the local network,
 connection to the Redis container may fail.
@@ -79,14 +84,35 @@ The IP address of the redis container can be obtained by running the command:
 > docker inspect `docker ps|grep redis|cut -d' ' -f1`|grep '"IPAddress": "1'|cut -d'"' -f4
 ```
 
+Update data into DB from remote source:
+
+```
+> php artisan app:content
+```
+
 ### Routes
 
 ```
-GET|HEAD   api/addresses ............ address.index › Api\AddressController@index
-GET|HEAD   api/companies ............ company.index › Api\CompanyController@index
-GET|HEAD   api/geo .......................... geo.index › Api\GeoController@index
-GET|HEAD   api/index ...................... user.index › Api\UserController@index
+update data:
 GET|HEAD   api/run .................................. run › Api\ContentController
+get index User collection:
+GET|HEAD   api/index ...................... user.index › Api\UserController@index
+get index Addresses collection:
+GET|HEAD   api/addresses ............ address.index › Api\AddressController@index
+get index Companies collection:
+GET|HEAD   api/companies ............ company.index › Api\CompanyController@index
+get index Geo collection:
+GET|HEAD   api/geo .......................... geo.index › Api\GeoController@index
+```
+
+#### Example GET queries
+
+```
+http://localhost/run?api_key=*12345678*
+http://localhost/index?api_key=*12345678*
+http://localhost/addresses?api_key=*12345678*
+http://localhost/companies?api_key=*12345678*
+http://localhost/geo?api_key=*12345678*
 ```
 
 #### Example remote API Response
