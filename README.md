@@ -1,7 +1,7 @@
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 ```
-https://jsonplaceholder.typicode.com/users
+Data cource: https://jsonplaceholder.typicode.com/users
 ```
 
 ### Tasks.
@@ -14,6 +14,80 @@ https://jsonplaceholder.typicode.com/users
 - Implement a function called on a schedule (Laravel Scheduler) to update user data from JSONPlaceholder regularly;
 - To build the project, you can use Docker Compose (optional);
 
+
+### Commands as superuser to initialize the application
+
+The system must first have the necessary components installed,
+such as composer, git, docker. PHP version >8.1.
+Sail has been removed completely from composer applications and dependencies.
+
+```
+> cd /path_to_projects
+> git clone https://github.com/Igor-ad/laravel_jsonplaceholder-typicode_api.git
+> cd /path_to_projects/laravel_jsonplaceholder-typicode_api
+> cp ./.env.example ./.env
+```
+
+It is necessary to fill in the parameters of the environment file ./.env with the following values:
+DB_PASSWORD.
+Update libraries and modules. Create and run a containers.
+
+```
+> composer update
+> chmod 777 -R ./storage/logs
+> docker-compose build 
+> docker-compose up 
+```
+
+The Laravel home page must be accessible from a local address
+http://localhost/.
+If the directories that Laravel should write to are not writable on behalf of the owner,
+connecting to the home page may cause a number of access errors.
+The following commands will open "public" entry access to the appropriate directories.
+```
+> chmod 755 -R ./public
+> chmod 755 ./.env
+> chmod 777 -R ./storage/framework/sessions
+> chmod 777 ./storage/framework/views
+> chmod 777 ./storage/framework/cache/data
+> php artisan key:generate
+> php artisan migrate
+```
+
+If the migration command returns a database connection error,
+then you should replace in the environment file ./.env
+the value of the DB_HOST parameter to the IP address of the MySQL container.
+(Database connection error may appear during the testing phase)
+The IP address of the MySQL container can be obtained by running the command:
+```
+> docker inspect `docker ps|grep mysql|cut -d' ' -f1`|grep '"IPAddress": "1'|cut -d'"' -f4
+```
+
+and repeat the migration command
+
+```
+> php artisan migrate
+```
+
+If testing is carried out on another machine on the local network,
+connection to the Redis container may fail.
+In this case, you should replace ./.env in the environment file
+the value of the REDIS_HOST parameter to the IP address of the redis container.
+The IP address of the redis container can be obtained by running the command:
+
+```
+> docker inspect `docker ps|grep redis|cut -d' ' -f1`|grep '"IPAddress": "1'|cut -d'"' -f4
+```
+
+### Routes
+
+```
+GET|HEAD   api/addresses ............ address.index › Api\AddressController@index
+GET|HEAD   api/companies ............ company.index › Api\CompanyController@index
+GET|HEAD   api/geo .......................... geo.index › Api\GeoController@index
+GET|HEAD   api/index ...................... user.index › Api\UserController@index
+GET|HEAD   api/run .................................. run › Api\ContentController
+```
 
 #### Example remote API Response
 
