@@ -1,11 +1,11 @@
 services:
-    laravel.test:
+    laravel.placeholder:
         build:
-            context: ./vendor/laravel/sail/runtimes/8.2
+            context: ./.docker/runtimes/8.2
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-        image: sail-8.2/app
+        image: placeholder-8.2/app
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -20,7 +20,7 @@ services:
         volumes:
             - '.:/var/www/html'
         networks:
-            - sail
+            - placeholder
         depends_on:
             - mysql
             - redis
@@ -36,10 +36,10 @@ services:
             MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
-            - 'sail-mysql:/var/lib/mysql'
-            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
+            - 'placeholder-mysql:/var/lib/mysql'
+            - './.docker/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
-            - sail
+            - placeholder
         healthcheck:
             test:
                 - CMD
@@ -53,9 +53,9 @@ services:
         ports:
             - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:
-            - 'sail-redis:/data'
+            - 'placeholder-redis:/data'
         networks:
-            - sail
+            - placeholder
         healthcheck:
             test:
                 - CMD
@@ -64,10 +64,10 @@ services:
             retries: 3
             timeout: 5s
 networks:
-    sail:
+    placeholder:
         driver: bridge
 volumes:
-    sail-mysql:
+    placeholder-mysql:
         driver: local
-    sail-redis:
+    placeholder-redis:
         driver: local

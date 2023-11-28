@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'place_holder' => [
+        'json_source_url' => env('JSON_SOURCE', ''),
+        'path_to_json_source' => '/users',
+        'admin_id' => 1000,
+    ]
+
 ];
