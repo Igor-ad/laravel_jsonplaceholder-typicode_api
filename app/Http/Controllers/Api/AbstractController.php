@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\ResponseTrait;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection as Collect;
+use Illuminate\Http\Response;
 
 abstract class AbstractController extends Controller
 {
-    use ResponseTrait;
-
     /**
      *  Models Array from remote API request for local upsert operations
      */
@@ -52,6 +50,14 @@ abstract class AbstractController extends Controller
     public function getData(): array
     {
         return $this->data;
+    }
+
+    public function collectionResponse(array|Collect $collection): JsonResponse
+    {
+        return response()->json($collection,
+            status: Response::HTTP_OK,
+            options: JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT,
+        );
     }
 
     /**
