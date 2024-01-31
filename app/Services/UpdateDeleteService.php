@@ -13,8 +13,6 @@ use Illuminate\Support\Collection as Collect;
 
 class UpdateDeleteService
 {
-    use ModelsOperationsTrait;
-
     /**
      * @param GeoController $geoController
      * @param AddressController $addressController
@@ -59,9 +57,23 @@ class UpdateDeleteService
         return $collection->pluck('id')->toArray();
     }
 
-    public function restoreDelete(): void
+    protected function getModelsControllers(): array
     {
-        $this->restore($this->contentKeys);
-        $this->softDelete($this->deleteKeys);
+        return [
+            'user' => $this->userController,
+            'company' => $this->companyController,
+            'address' => $this->addressController,
+            'geo' => $this->geoController,
+        ];
+    }
+
+    public function dataProcessing($collection): void
+    {
+        foreach ($this->getModelsControllers() as $controller) {
+            $controller->setData($collection);
+            $controller->restore($this->deleteKeys);
+            $controller->softDelete($this->deleteKeys);
+            $controller->upsert();
+        }
     }
 }

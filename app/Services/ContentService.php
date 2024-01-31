@@ -46,10 +46,8 @@ class ContentService
     public function run(): void
     {
         $this->updateDeleteService->setExistKeys();
-        $this->updateDeleteService->setData($this->getCollection());
-        $this->updateDeleteService->upsert();
         $this->updateDeleteService->setContentKeys($this->getCollection());
         $this->updateDeleteService->setDeleteKeys();
-        $this->updateDeleteService->restoreDelete();
+        $this->updateDeleteService->dataProcessing($this->getCollection());
     }
 }

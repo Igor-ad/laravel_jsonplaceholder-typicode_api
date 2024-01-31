@@ -14,7 +14,7 @@ class ContentController
         $content->run();
 
         return response()->json([
-            'message' => 'Content processing from remote source successfully',
+            'message' => 'Processing of content from a remote source was successful',
         ], 200,[],JSON_PRETTY_PRINT
         );
     }
