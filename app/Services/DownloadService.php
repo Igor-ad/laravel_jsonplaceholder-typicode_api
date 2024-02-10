@@ -20,7 +20,7 @@ class DownloadService
             throw new ContentProcessingException($e->getMessage());
         }
 
-        if ($response->status() === 200) {
+        if ($response->ok()) {
 
             return Http::get($url . $path . $param)->body();
         }
