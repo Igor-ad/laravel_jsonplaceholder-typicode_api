@@ -34,7 +34,7 @@ class ContentService
     {
         $this->content = DownloadService::getContent(
             (string)config('services.place_holder.json_source_url'),
-            config('services.place_holder.path_to_json_source')
+            (string)config('services.place_holder.path_to_json_source')
         );
     }
 
