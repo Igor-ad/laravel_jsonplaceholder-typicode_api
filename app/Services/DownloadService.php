@@ -15,19 +15,12 @@ class DownloadService
     public static function getContent(string $url, string $path, string $param = ''): string
     {
         try {
-            $response = Http::get($url . $path . $param);
+
+            return Http::get($url . $path . $param )->throw()->body();
+
         } catch (\Exception $e) {
+
             throw new ContentProcessingException($e->getMessage());
         }
-
-        if ($response->ok()) {
-
-            return Http::get($url . $path . $param)->body();
-        }
-
-        throw new ContentProcessingException(
-            'Can not get remote content',
-            $response->status()
-        );
     }
 }
