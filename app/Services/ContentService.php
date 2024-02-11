@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use GuzzleHttp\Exception\GuzzleException;
+use App\Exceptions\Api\ContentProcessingException;
 use Illuminate\Support\Collection as Collect;
 
 class ContentService
 {
     /**
-     * @throws GuzzleException
+     * @throws ContentProcessingException
      */
     public function __construct(
         protected UpdateDeleteService $updateDeleteService,
@@ -28,7 +28,7 @@ class ContentService
     }
 
     /**
-     * @throws GuzzleException
+     * @throws ContentProcessingException
      */
     protected function setContent(): void
     {
