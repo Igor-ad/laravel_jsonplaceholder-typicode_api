@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->string('phone');
             $table->string('website');
             $table->rememberToken()->nullable();
+            $table->boolean('is_admin')->default(null);
             $table->timestamps();
             $table->softDeletes();
             $table->index(['name', 'username']);

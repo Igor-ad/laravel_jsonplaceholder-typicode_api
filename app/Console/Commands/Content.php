@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Exceptions\Api\ContentProcessingException;
 use App\Services\ContentService;
 use Illuminate\Console\Command;
 
@@ -25,11 +26,16 @@ class Content extends Command
 
     /**
      * Execute the console command.
+     * @throws ContentProcessingException
      */
-    public function handle(ContentService $content)
+    public function handle(ContentService $content): int
     {
         $content->run();
-        info('OK, Cron is working!'); // Cron writes test line in the "storage/logs/laravel.log"
+
+        if (config('app.env') !== 'production') {
+            // Cron writes test line in the "storage/logs/laravel.log"
+            info('OK, Cron is working!');
+        }
 
         return 0;
     }

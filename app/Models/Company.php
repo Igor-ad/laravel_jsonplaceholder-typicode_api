@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
 {
-    use HasFactory, SoftDeletes, ModelHelperTrait;
+    use HasFactory, SoftDeletes;
 
     public $timestamps = false;
 
@@ -20,16 +20,6 @@ class Company extends Model
         'catchPhrase',
         'bs',
         'user_id',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'user_id',
-        'deleted_at',
     ];
 
     public function user(): BelongsTo

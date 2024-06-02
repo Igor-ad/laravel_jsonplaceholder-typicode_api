@@ -70,10 +70,10 @@ class UpdateDeleteService
     public function dataProcessing($collection): void
     {
         foreach ($this->getModelsControllers() as $controller) {
-            $controller->setData($collection);
             $controller->restore($this->deleteKeys);
             $controller->softDelete($this->deleteKeys);
-            $controller->upsert();
+            $data = $controller->toArray($collection);
+            $controller->upsert($data);
         }
     }
 }

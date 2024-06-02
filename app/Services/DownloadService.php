@@ -12,11 +12,11 @@ class DownloadService
     /**
      * @throws ContentProcessingException
      */
-    public static function getContent(string $url, string $path, string $param = ''): string
+    public static function getContent(string $url, string $path, array $param = []): string
     {
         try {
 
-            return Http::get($url . $path . $param )->throw()->body();
+            return Http::get($url . $path, $param )->throw()->body();
 
         } catch (\Exception $e) {
 

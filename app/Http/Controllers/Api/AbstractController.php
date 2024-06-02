@@ -5,22 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection as Collect;
-use Illuminate\Http\Response;
 
 abstract class AbstractController extends Controller
 {
-    /**
-     *  Models Array from remote API request for local upsert operations
-     */
-    private array $data = [];
-
-    /**
-     *  Get collection from DB
-     */
-    abstract protected function getCollection(): Collection;
+    abstract public function index(): ResourceCollection;
 
     /**
      *  Extract collection from remote source JSON data
@@ -42,39 +32,11 @@ abstract class AbstractController extends Controller
      */
     abstract public function softDelete(array $keys): int;
 
-    public function setData(Collect $collection): void
-    {
-        $this->data = $this->toArray($collection);
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
-    }
-
-    public function collectionResponse(array|Collect $collection): JsonResponse
-    {
-        return response()->json($collection,
-            status: Response::HTTP_OK,
-            options: JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT,
-        );
-    }
-
-    /**
-     *  Model index, JSON response to an API request from the endpoint
-     */
-    public function index(): JsonResponse
-    {
-        return $this->collectionResponse($this->getCollection());
-    }
-
     /**
      *  Extract model array from collection
      */
-    protected function toArray(Collect $collection): array
+    public function toArray(Collect $collection): array
     {
-        return $collection->map(function (object $collect) {
-            return $this->extract($collect);
-        })->toArray();
+        return $collection->map(fn(object $collect) => $this->extract($collect))->toArray();
     }
 }

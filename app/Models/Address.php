@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Address extends Model
 {
-    use HasFactory, SoftDeletes, ModelHelperTrait;
+    use HasFactory, SoftDeletes;
 
     public $timestamps = false;
 
@@ -22,16 +22,6 @@ class Address extends Model
         'city',
         'zipcode',
         'user_id',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'user_id',
-        'deleted_at',
     ];
 
     public function geo(): HasOne

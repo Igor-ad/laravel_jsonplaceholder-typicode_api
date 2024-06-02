@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\AddressCollection;
 use App\Models\Address;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class AddressController extends AbstractController
 {
-    protected function getCollection(): Collection
+        public function index(): ResourceCollection
     {
-        return Address::with('geo')->get();
+        return AddressCollection::make(Address::with('geo')->get());
     }
 
     public function extract(object $collect): array
@@ -24,11 +25,7 @@ class AddressController extends AbstractController
 
     public function upsert(array $data = []): int
     {
-        return Address::query()->upsert(
-            $this->getData(),
-            Address::getFillableAttributes(),
-            Address::getFillableAttributes()
-        );
+        return Address::query()->upsert($data, 'user_id',);
     }
 
     public function restore(array $keys): int

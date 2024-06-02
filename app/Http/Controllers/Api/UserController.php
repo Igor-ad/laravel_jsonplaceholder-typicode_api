@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\UserCollection;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class UserController extends AbstractController
 {
-    protected function getCollection(): Collection
+    public function index(): ResourceCollection
     {
-        return User::with('address', 'company')->get(User::getFillableAttributes());
+        return UserCollection::make(User::with('address', 'company')->get());
     }
 
     public function extract(object $collect): array
@@ -38,10 +40,6 @@ class UserController extends AbstractController
 
     public function upsert(array $data = []): int
     {
-        return User::query()->upsert(
-            $this->getData(),
-            User::getFillableAttributes(),
-            User::getFillableAttributes()
-        );
+        return User::query()->upsert($data, 'id',);
     }
 }

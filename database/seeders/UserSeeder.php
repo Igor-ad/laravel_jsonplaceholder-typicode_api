@@ -15,8 +15,10 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
+            'id' => 1000,
             'name' => 'admin',
             'api_token' => '*12345678*',
+            'is_admin' => 1,
         ]);
     }
 }

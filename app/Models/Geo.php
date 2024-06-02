@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Geo extends Model
 {
-    use HasFactory, SoftDeletes, ModelHelperTrait;
+    use HasFactory, SoftDeletes;
 
     public $table = 'geo';
 
@@ -21,16 +21,6 @@ class Geo extends Model
         'lat',
         'lng',
         'user_id',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'user_id',
-        'deleted_at',
     ];
 
     public function address(): BelongsTo

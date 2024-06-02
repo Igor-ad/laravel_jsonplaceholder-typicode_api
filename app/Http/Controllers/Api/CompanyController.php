@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\CompanyCollection;
 use App\Models\Company;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class CompanyController extends AbstractController
 {
-    protected function getCollection(): Collection
+    public function index(): ResourceCollection
     {
-        return Company::all();
+        return CompanyCollection::make(Company::all());
     }
 
     public function extract(object $collect): array
@@ -23,11 +24,7 @@ class CompanyController extends AbstractController
 
     public function upsert(array $data = []): int
     {
-        return Company::query()->upsert(
-            $this->getData(),
-            Company::getFillableAttributes(),
-            Company::getFillableAttributes()
-        );
+        return Company::query()->upsert($data, 'user_id');
     }
 
     public function restore(array $keys): int

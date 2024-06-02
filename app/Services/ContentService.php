@@ -43,7 +43,21 @@ class ContentService
         $this->collection = collect(json_decode($jsonContent));
     }
 
-    public function run(): void
+    /**
+     * @throws ContentProcessingException
+     */
+    public function run(): int|ContentProcessingException
+    {
+        try {
+            $this->contentProcessing();
+        } catch (\Exception $e) {
+
+            throw new ContentProcessingException($e->getMessage());
+        }
+        return 0;
+    }
+
+    private function contentProcessing(): void
     {
         $this->updateDeleteService->setExistKeys();
         $this->updateDeleteService->setContentKeys($this->getCollection());

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\GeoCollection;
 use App\Models\Geo;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class GeoController extends AbstractController
 {
-    protected function getCollection(): Collection
+        public function index(): ResourceCollection
     {
-        return Geo::all();
+        return GeoCollection::make(Geo::all());
     }
 
     public function extract(object $collect): array
@@ -22,11 +23,7 @@ class GeoController extends AbstractController
 
     public function upsert(array $data = []): int
     {
-        return Geo::query()->upsert(
-            $this->getData(),
-            Geo::getFillableAttributes(),
-            Geo::getFillableAttributes()
-        );
+        return Geo::query()->upsert($data, 'user_id',);
     }
 
     public function restore(array $keys): int
