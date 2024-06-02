@@ -69,9 +69,9 @@ class User extends Authenticatable
             Geo::class,
             Address::class,
             'user_id',
-            'address_id',
+            'user_id',
             'id',
-            'id',
+            'user_id',
         );
     }
 }

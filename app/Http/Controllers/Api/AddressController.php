@@ -25,7 +25,7 @@ class AddressController extends AbstractController
 
     public function upsert(array $data = []): int
     {
-        return Address::query()->upsert($data, 'user_id',);
+        return Address::query()->upsert($data, 'user_id');
     }
 
     public function restore(array $keys): int

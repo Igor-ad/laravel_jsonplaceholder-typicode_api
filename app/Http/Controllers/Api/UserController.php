@@ -13,7 +13,12 @@ class UserController extends AbstractController
 {
     public function index(): ResourceCollection
     {
-        return UserCollection::make(User::with('address', 'company')->get());
+        $users = User::query()
+            ->with(['address', 'company'])
+            ->where('is_admin', null)
+            ->get();
+
+        return UserCollection::make($users);
     }
 
     public function extract(object $collect): array
@@ -40,6 +45,6 @@ class UserController extends AbstractController
 
     public function upsert(array $data = []): int
     {
-        return User::query()->upsert($data, 'id',);
+        return User::query()->upsert($data, 'id');
     }
 }

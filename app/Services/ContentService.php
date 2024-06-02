@@ -22,11 +22,6 @@ class ContentService
         $this->setCollection($this->content);
     }
 
-    public function getCollection(): ?Collect
-    {
-        return $this->collection;
-    }
-
     /**
      * @throws ContentProcessingException
      */
@@ -60,8 +55,8 @@ class ContentService
     private function contentProcessing(): void
     {
         $this->updateDeleteService->setExistKeys();
-        $this->updateDeleteService->setContentKeys($this->getCollection());
+        $this->updateDeleteService->setContentKeys($this->collection);
         $this->updateDeleteService->setDeleteKeys();
-        $this->updateDeleteService->dataProcessing($this->getCollection());
+        $this->updateDeleteService->dataProcessing($this->collection);
     }
 }

@@ -23,7 +23,7 @@ class GeoController extends AbstractController
 
     public function upsert(array $data = []): int
     {
-        return Geo::query()->upsert($data, 'user_id',);
+        return Geo::query()->upsert($data, 'user_id');
     }
 
     public function restore(array $keys): int
