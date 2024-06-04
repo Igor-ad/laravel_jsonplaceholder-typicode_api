@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'id' => 1000,
+            'id' => config('services.place_holder.admin_id'),
             'name' => 'admin',
             'api_token' => '*12345678*',
             'is_admin' => 1,
