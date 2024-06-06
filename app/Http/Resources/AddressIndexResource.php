@@ -7,21 +7,21 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AddressResource extends JsonResource
+class AddressIndexResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
+            'user_id' => $this->user_id,
             'street' => $this->street,
             'suite' => $this->suite,
             'city' => $this->city,
             'zipcode' => $this->zipcode,
-            'geo' => GeoResource::make($this->geo),
+            'geo' => [
+                'lat' => $this->geo->lat,
+                'lng' => $this->geo->lng,
+            ],
+            'user' => $this->user,
         ];
     }
 }

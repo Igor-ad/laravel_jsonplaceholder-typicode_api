@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\AddressCollection;
+use App\Http\Resources\AddressIndexCollection;
 use App\Models\Address;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class AddressController extends AbstractController
 {
-        public function index(): ResourceCollection
+    public function index(): ResourceCollection
     {
-        return AddressCollection::make(Address::with('geo')->get());
+        return AddressIndexCollection::make(
+            Address::with(['geo', 'user:id,name,username,email'])
+                ->get()
+        );
     }
 
     public function extract(object $collect): array

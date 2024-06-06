@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\GeoCollection;
+use App\Http\Resources\GeoIndexCollection;
 use App\Models\Geo;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class GeoController extends AbstractController
 {
-        public function index(): ResourceCollection
+    public function index(): ResourceCollection
     {
-        return GeoCollection::make(Geo::all());
+        return GeoIndexCollection::make(
+            Geo::with('user:id,name,username,email')
+                ->get()
+        );
     }
 
     public function extract(object $collect): array

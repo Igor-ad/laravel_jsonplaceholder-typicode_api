@@ -27,4 +27,9 @@ class Geo extends Model
     {
         return $this->belongsTo(Address::class, 'user_id', 'user_id');
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

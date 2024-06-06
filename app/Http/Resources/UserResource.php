@@ -9,11 +9,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -23,8 +18,21 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'website' => $this->website,
-            'address' => AddressResource::make($this->address),
-            'company' => CompanyResource::make($this->company),
+            'address' => [
+                'street' => $this->address->street,
+                'suite' => $this->address->suite,
+                'city' => $this->address->city,
+                'zipcode' => $this->address->zipcode,
+                'geo' => [
+                    'lat' => $this->geo->lat,
+                    'lng' => $this->geo->lng,
+                ],
+            ],
+            'company' => [
+                'name' => $this->company->name,
+                'catchPhrase' => $this->company->catchPhrase,
+                'bs' => $this->company->bs,
+            ],
         ];
     }
 }

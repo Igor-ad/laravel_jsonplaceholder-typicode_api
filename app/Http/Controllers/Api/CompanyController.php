@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\CompanyCollection;
+use App\Http\Resources\CompanyIndexCollection;
 use App\Models\Company;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -12,7 +12,10 @@ class CompanyController extends AbstractController
 {
     public function index(): ResourceCollection
     {
-        return CompanyCollection::make(Company::all());
+        return CompanyIndexCollection::make(
+            Company::with('user:id,name,username,email')
+                ->get()
+        );
     }
 
     public function extract(object $collect): array
