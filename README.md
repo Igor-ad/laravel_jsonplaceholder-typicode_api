@@ -95,12 +95,16 @@ Update data into DB from remote source:
 ```
 update data:
 GET|HEAD   api/run .................................. run › Api\ContentController
+
 get index User collection:
 GET|HEAD   api/index ...................... user.index › Api\UserController@index
+
 get index Addresses collection:
 GET|HEAD   api/addresses ............ address.index › Api\AddressController@index
+
 get index Companies collection:
 GET|HEAD   api/companies ............ company.index › Api\CompanyController@index
+
 get index Geo collection:
 GET|HEAD   api/geo .......................... geo.index › Api\GeoController@index
 ```
@@ -108,11 +112,11 @@ GET|HEAD   api/geo .......................... geo.index › Api\GeoController@in
 #### Example GET queries
 
 ```
-http://localhost/run?api_key=*12345678*
-http://localhost/index?api_key=*12345678*
-http://localhost/addresses?api_key=*12345678*
-http://localhost/companies?api_key=*12345678*
-http://localhost/geo?api_key=*12345678*
+http://localhost/api/run?api_key=*12345678*
+http://localhost/api/index?api_key=*12345678*
+http://localhost/api/addresses?api_key=*12345678*
+http://localhost/api/companies?api_key=*12345678*
+http://localhost/api/geo?api_key=*12345678*
 ```
 
 #### Example remote API Response
