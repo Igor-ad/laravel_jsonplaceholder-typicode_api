@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserInputResource;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class UserController extends AbstractController
+class UserController extends Controller
 {
     public function index(): ResourceCollection
     {
@@ -21,30 +22,17 @@ class UserController extends AbstractController
         return UserCollection::make($users);
     }
 
-    public function extract(object $collect): array
+    public function fromCollect(object $collect): User
     {
-        return collect($collect)
-            ->except(['address', 'company'])
-            ->toArray();
+        return User::updateOrCreate((new UserInputResource)->toArray($collect));
+    }
+    public function restoreById(int $id): int
+    {
+        return User::onlyTrashed()->where('id', $id)->restore();
     }
 
-    public function softDelete(array $keys): int
+    public function softDeleteNotInId(array $keys): int
     {
-        return User::query()->whereIn('id', $keys)->delete();
-    }
-
-    public function restore(array $keys): int
-    {
-        return User::onlyTrashed()->whereIn('id', $keys)->restore();
-    }
-
-    public function getWithTrashed(): Collection
-    {
-        return User::withTrashed()->get();
-    }
-
-    public function upsert(array $data = []): int
-    {
-        return User::query()->upsert($data, 'id');
+        return User::query()->whereNotIn('id', $keys)->delete();
     }
 }

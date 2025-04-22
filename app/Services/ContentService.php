@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Exceptions\Api\ContentProcessingException;
+use App\Http\Controllers\Api\AddressController;
+use App\Http\Controllers\Api\CompanyController;
+use App\Http\Controllers\Api\GeoController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Collection as Collect;
 
 class ContentService
@@ -13,11 +17,14 @@ class ContentService
      * @throws ContentProcessingException
      */
     public function __construct(
-        protected UpdateDeleteService $updateDeleteService,
+        protected GeoController       $geoController,
+        protected AddressController   $addressController,
+        protected CompanyController   $companyController,
+        protected UserController      $userController,
         protected string              $content = '',
         protected ?Collect            $collection = null,
-    )
-    {
+        protected array               $existKeys = [],
+    ) {
         $this->setContent();
         $this->setCollection($this->content);
     }
@@ -54,9 +61,23 @@ class ContentService
 
     private function contentProcessing(): void
     {
-        $this->updateDeleteService->setExistKeys();
-        $this->updateDeleteService->setContentKeys($this->collection);
-        $this->updateDeleteService->setDeleteKeys();
-        $this->updateDeleteService->dataProcessing($this->collection);
+        $this->collection->map(
+            function ($data) {
+                $this->existKeys[] = $data->id;
+                $this->userController->restoreById($data->id);
+                $this->userController->fromCollect($data);
+                $this->companyController->restoreById($data->id);
+                $this->companyController->fromCollect($data);
+                $this->addressController->restoreById($data->id);
+                $this->addressController->fromCollect($data);
+                $this->geoController->restoreById($data->id);
+                $this->geoController->fromCollect($data);
+            }
+        );
+        array_push($this->existKeys, config('services.place_holder.admin_id'));
+        $this->userController->softDeleteNotInId($this->existKeys);
+        $this->companyController->softDeleteNotInId($this->existKeys);
+        $this->addressController->softDeleteNotInId($this->existKeys);
+        $this->geoController->softDeleteNotInId($this->existKeys);
     }
 }

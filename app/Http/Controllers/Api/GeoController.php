@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\GeoIndexCollection;
+use App\Http\Resources\GeoInputResource;
 use App\Models\Geo;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class GeoController extends AbstractController
+class GeoController extends Controller
 {
     public function index(): ResourceCollection
     {
@@ -18,24 +20,18 @@ class GeoController extends AbstractController
         );
     }
 
-    public function extract(object $collect): array
+    public function fromCollect(object $collect): Geo
     {
-        return collect($collect->address->geo)
-            ->put('user_id', $collect->id)->toArray();
+        return Geo::updateOrCreate((new GeoInputResource())->toArray($collect));
     }
 
-    public function upsert(array $data = []): int
+    public function restoreById(int $id): int
     {
-        return Geo::query()->upsert($data, 'user_id');
+        return Geo::onlyTrashed()->where('user_id', $id)->restore();
     }
 
-    public function restore(array $keys): int
+    public function softDeleteNotInId(array $keys): int
     {
-        return Geo::onlyTrashed()->whereIn('user_id', $keys)->restore();
-    }
-
-    public function softDelete(array $keys): int
-    {
-        return Geo::query()->whereIn('user_id', $keys)->delete();
+        return Geo::query()->whereNotIn('user_id', $keys)->delete();
     }
 }

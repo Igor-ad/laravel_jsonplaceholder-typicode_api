@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\CompanyIndexCollection;
+use App\Http\Resources\CompanyInputResource;
 use App\Models\Company;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class CompanyController extends AbstractController
+class CompanyController extends Controller
 {
     public function index(): ResourceCollection
     {
@@ -18,25 +20,18 @@ class CompanyController extends AbstractController
         );
     }
 
-    public function extract(object $collect): array
+    public function fromCollect(object $collect): Company
     {
-        return collect($collect->company)
-            ->put('user_id', $collect->id)
-            ->toArray();
+        return Company::updateOrCreate((new CompanyInputResource())->toArray($collect));
     }
 
-    public function upsert(array $data = []): int
+    public function restoreById(int $id): int
     {
-        return Company::query()->upsert($data, 'user_id');
+        return Company::onlyTrashed()->where('user_id', $id)->restore();
     }
 
-    public function restore(array $keys): int
+    public function softDeleteNotInId(array $keys): int
     {
-        return Company::onlyTrashed()->whereIn('user_id', $keys)->restore();
-    }
-
-    public function softDelete(array $keys): int
-    {
-        return Company::query()->whereIn('user_id', $keys)->delete();
+        return Company::query()->whereNotIn('user_id', $keys)->delete();
     }
 }
