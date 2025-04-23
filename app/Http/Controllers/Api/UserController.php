@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserCollection;
-use App\Http\Resources\UserInputResource;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -22,10 +21,6 @@ class UserController extends Controller
         return UserCollection::make($users);
     }
 
-    public function fromCollect(object $collect): User
-    {
-        return User::updateOrCreate((new UserInputResource)->toArray($collect));
-    }
     public function restoreById(int $id): int
     {
         return User::onlyTrashed()->where('id', $id)->restore();
@@ -34,5 +29,10 @@ class UserController extends Controller
     public function softDeleteNotInId(array $keys): int
     {
         return User::query()->whereNotIn('id', $keys)->delete();
+    }
+
+    public function upsert(array $data): int
+    {
+        return User::query()->upsert($data, 'id');
     }
 }

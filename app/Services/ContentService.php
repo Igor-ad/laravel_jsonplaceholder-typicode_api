@@ -9,6 +9,10 @@ use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\GeoController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Resources\AddressInoutResource;
+use App\Http\Resources\CompanyInputResource;
+use App\Http\Resources\GeoInputResource;
+use App\Http\Resources\UserInputResource;
 use Illuminate\Support\Collection as Collect;
 use Illuminate\Support\Facades\Cache;
 
@@ -25,6 +29,10 @@ class ContentService
         protected ?string           $content = null,
         protected ?Collect          $collection = null,
         protected array             $existKeys = [],
+        protected array             $users = [],
+        protected array             $companies = [],
+        protected array             $addresses = [],
+        protected array             $geo = [],
     ) {
         $this->setContent();
         $this->setCollection($this->content);
@@ -71,20 +79,23 @@ class ContentService
             function ($data) {
                 $this->existKeys[] = $data->id;
                 $this->restore($data);
-                $this->createModels($data);
+                $this->users[] = (new UserInputResource())->toArray($data);
+                $this->companies[] = (new CompanyInputResource())->toArray($data);
+                $this->addresses[] = (new AddressInoutResource())->toArray($data);
+                $this->geo[] = (new GeoInputResource())->toArray($data);
             }
         );
-
+        $this->upsert();
         $this->existKeys[] = config('services.place_holder.admin_id');
         $this->softDelete();
     }
 
-    private function createModels(object $data): void
+    private function upsert(): void
     {
-        $this->userController->fromCollect($data);
-        $this->companyController->fromCollect($data);
-        $this->addressController->fromCollect($data);
-        $this->geoController->fromCollect($data);
+        $this->userController->upsert($this->users);
+        $this->companyController->upsert($this->companies);
+        $this->addressController->upsert($this->addresses);
+        $this->geoController->upsert($this->geo);
     }
 
     private function restore(object $data): void
