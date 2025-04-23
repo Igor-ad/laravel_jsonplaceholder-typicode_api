@@ -21,9 +21,9 @@ class UserController extends Controller
         return UserCollection::make($users);
     }
 
-    public function restoreById(int $id): int
+    public function restore(array $keys): int
     {
-        return User::onlyTrashed()->where('id', $id)->restore();
+        return User::onlyTrashed()->whereIn('id', $keys)->restore();
     }
 
     public function softDeleteNotInId(array $keys): int

@@ -19,9 +19,9 @@ class AddressController extends Controller
         );
     }
 
-    public function restoreById(int $id): int
+    public function restore(array $keys): int
     {
-        return Address::onlyTrashed()->where('user_id', $id)->restore();
+        return Address::onlyTrashed()->whereIn('user_id', $keys)->restore();
     }
 
     public function softDeleteNotInId(array $keys): int

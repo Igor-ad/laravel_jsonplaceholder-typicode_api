@@ -19,9 +19,9 @@ class GeoController extends Controller
         );
     }
 
-    public function restoreById(int $id): int
+    public function restore(array $keys): int
     {
-        return Geo::onlyTrashed()->where('user_id', $id)->restore();
+        return Geo::onlyTrashed()->whereIn('user_id', $keys)->restore();
     }
 
     public function softDeleteNotInId(array $keys): int

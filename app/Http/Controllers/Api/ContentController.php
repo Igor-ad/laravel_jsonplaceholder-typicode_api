@@ -17,9 +17,8 @@ class ContentController
     {
 
         return response()->json([
-                'success' => $content->run() === 0,
-                'message' => 'Content from a remote source processed successfully.',
-            ]
-        );
+            'success' => $content->run() === 0,
+            'message' => 'Content from a remote source processed successfully.',
+        ]);
     }
 }

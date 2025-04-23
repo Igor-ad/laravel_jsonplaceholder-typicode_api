@@ -19,9 +19,9 @@ class CompanyController extends Controller
         );
     }
 
-    public function restoreById(int $id): int
+    public function restore(array $keys): int
     {
-        return Company::onlyTrashed()->where('user_id', $id)->restore();
+        return Company::onlyTrashed()->whereIn('user_id', $keys)->restore();
     }
 
     public function softDeleteNotInId(array $keys): int
