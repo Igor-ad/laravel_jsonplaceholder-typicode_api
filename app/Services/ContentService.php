@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\GeoController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Collection as Collect;
+use Illuminate\Support\Facades\Cache;
 
 class ContentService
 {
@@ -17,13 +18,13 @@ class ContentService
      * @throws ContentProcessingException
      */
     public function __construct(
-        protected GeoController       $geoController,
-        protected AddressController   $addressController,
-        protected CompanyController   $companyController,
-        protected UserController      $userController,
-        protected string              $content = '',
-        protected ?Collect            $collection = null,
-        protected array               $existKeys = [],
+        protected GeoController     $geoController,
+        protected AddressController $addressController,
+        protected CompanyController $companyController,
+        protected UserController    $userController,
+        protected ?string           $content = null,
+        protected ?Collect          $collection = null,
+        protected array             $existKeys = [],
     ) {
         $this->setContent();
         $this->setCollection($this->content);
@@ -32,15 +33,20 @@ class ContentService
     /**
      * @throws ContentProcessingException
      */
-    protected function setContent(): void
+    private function setContent(): void
     {
-        $this->content = DownloadService::getContent(
-            (string)config('services.place_holder.json_source_url'),
-            (string)config('services.place_holder.path_to_json_source')
-        );
+        $this->content = Cache::get('users');
+
+        if (is_null($this->content)) {
+            $this->content = DownloadService::getContent(
+                (string)config('services.place_holder.json_source_url'),
+                (string)config('services.place_holder.path_to_json_source')
+            );
+            Cache::set('users', $this->content, (int)config('services.place_holder.expiration'));
+        }
     }
 
-    protected function setCollection(string $jsonContent): void
+    private function setCollection(string $jsonContent): void
     {
         $this->collection = collect(json_decode($jsonContent));
     }
@@ -64,17 +70,33 @@ class ContentService
         $this->collection->map(
             function ($data) {
                 $this->existKeys[] = $data->id;
-                $this->userController->restoreById($data->id);
-                $this->userController->fromCollect($data);
-                $this->companyController->restoreById($data->id);
-                $this->companyController->fromCollect($data);
-                $this->addressController->restoreById($data->id);
-                $this->addressController->fromCollect($data);
-                $this->geoController->restoreById($data->id);
-                $this->geoController->fromCollect($data);
+                $this->restore($data);
+                $this->createModels($data);
             }
         );
-        array_push($this->existKeys, config('services.place_holder.admin_id'));
+
+        $this->existKeys[] = config('services.place_holder.admin_id');
+        $this->softDelete();
+    }
+
+    private function createModels(object $data): void
+    {
+        $this->userController->fromCollect($data);
+        $this->companyController->fromCollect($data);
+        $this->addressController->fromCollect($data);
+        $this->geoController->fromCollect($data);
+    }
+
+    private function restore(object $data): void
+    {
+        $this->userController->restoreById($data->id);
+        $this->companyController->restoreById($data->id);
+        $this->addressController->restoreById($data->id);
+        $this->geoController->restoreById($data->id);
+    }
+
+    private function softDelete(): void
+    {
         $this->userController->softDeleteNotInId($this->existKeys);
         $this->companyController->softDeleteNotInId($this->existKeys);
         $this->addressController->softDeleteNotInId($this->existKeys);
