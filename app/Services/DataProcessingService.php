@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\GeoController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Resources\AddressInoutResource;
+use App\Http\Resources\AddressInputResource;
 use App\Http\Resources\CompanyInputResource;
 use App\Http\Resources\GeoInputResource;
 use App\Http\Resources\UserInputResource;
@@ -21,7 +21,7 @@ class DataProcessingService
         private AddressController $addressController,
         private CompanyController $companyController,
         private UserController    $userController,
-        private array             $existKeys = [],
+        private array             $collectKeys = [],
         private array             $users = [],
         private array             $companies = [],
         private array             $addresses = [],
@@ -33,17 +33,17 @@ class DataProcessingService
     {
         $collection->map(
             function ($data): void {
-                $this->existKeys[] = $data->id;
+                $this->collectKeys[] = (int)$data->id;
                 $this->users[] = (new UserInputResource())->toArray($data);
                 $this->companies[] = (new CompanyInputResource())->toArray($data);
-                $this->addresses[] = (new AddressInoutResource())->toArray($data);
+                $this->addresses[] = (new AddressInputResource())->toArray($data);
                 $this->geo[] = (new GeoInputResource())->toArray($data);
             }
         );
-        $this->restore($this->existKeys);
+        $this->restore($this->collectKeys);
         $this->upsert();
-        $this->existKeys[] = config('services.place_holder.admin_id');
-        $this->softDelete($this->existKeys);
+        $this->collectKeys[] = (int)config('services.place_holder.admin_id');
+        $this->softDelete($this->collectKeys);
     }
 
     private function restore(array $keys): void

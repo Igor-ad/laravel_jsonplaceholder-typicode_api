@@ -7,17 +7,18 @@ namespace App\Services;
 use App\Exceptions\Api\ContentProcessingException;
 use Illuminate\Support\Facades\Http;
 
-class DownloadService
+class DataFetchService
 {
     /**
      * @throws ContentProcessingException
      */
-    public static function getContent(string $url, string $path, array $param = []): string
+    public function getContent(string $url, string $path, array $param = []): array
     {
         try {
-            return Http::get($url . $path, $param)->throw()->body();
-        } catch (\Exception $e) {
+            $response = Http::get($url . $path, $param);
+        } catch (\Throwable $e) {
             throw new ContentProcessingException($e->getMessage());
         }
+        return $response->json();
     }
 }

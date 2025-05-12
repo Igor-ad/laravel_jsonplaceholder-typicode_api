@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-class AddressInoutResource
+class AddressInputResource
 {
     public function toArray(object $data): array
     {

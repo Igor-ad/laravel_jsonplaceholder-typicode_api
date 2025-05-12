@@ -6,31 +6,33 @@ namespace App\Console\Commands;
 
 use App\Exceptions\Api\ContentProcessingException;
 use App\Services\ContentService;
+use App\Services\DataProcessingService;
 use Illuminate\Console\Command;
 
 class Content extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'app:content';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Content processing from remote source';
 
+    public function __construct(
+        protected ContentService $contentService,
+        protected DataProcessingService $processingService,
+    ) {
+        parent::__construct();
+    }
+
     /**
-     * Execute the console command.
      * @throws ContentProcessingException
      */
-    public function handle(ContentService $content): int
+    public function handle(): int
     {
-        $content->run();
+        try {
+            $collection = $this->contentService->getCollection();
+            $this->processingService->contentProcessing($collection);
+        } catch (\Throwable $e) {
+            throw new ContentProcessingException($e->getMessage());
+        }
 
         if (config('app.env') !== 'production') {
             // Cron writes test line in the "storage/logs/laravel.log"

@@ -14,6 +14,7 @@ class ContentProcessingException extends Exception
     {
         return response()->json(
             data: [
+                'success' => false,
                 'error' => $this->getMessage(),
             ],
             options: JSON_PRETTY_PRINT,
