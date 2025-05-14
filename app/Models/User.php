@@ -56,6 +56,13 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected $visible = [
+        'id',
+        'name',
+        'username',
+        'email',
+    ];
+
     public function address(): HasOne
     {
         return $this->hasOne(Address::class)->with('geo');

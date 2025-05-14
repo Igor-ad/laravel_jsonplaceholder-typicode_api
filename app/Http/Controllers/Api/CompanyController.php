@@ -14,7 +14,7 @@ class CompanyController extends Controller
     public function index(): ResourceCollection
     {
         return CompanyIndexCollection::make(
-            Company::with('user:id,name,username,email')
+            Company::with('user')
                 ->get()
         );
     }

@@ -14,7 +14,7 @@ class GeoController extends Controller
     public function index(): ResourceCollection
     {
         return GeoIndexCollection::make(
-            Geo::with('user:id,name,username,email')
+            Geo::with('user')
                 ->get()
         );
     }

@@ -14,7 +14,7 @@ class AddressController extends Controller
     public function index(): ResourceCollection
     {
         return AddressIndexCollection::make(
-            Address::with(['geo', 'user:id,name,username,email'])
+            Address::with(['geo', 'user'])
                 ->get()
         );
     }
